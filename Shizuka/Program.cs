@@ -6,7 +6,9 @@ namespace Shizuka
     {
         static void Main(string[] args)
         {
-            Console.WriteLine("Hello World!");
+			Shizuka.Init();
+			Console.ReadLine();
+			Shizuka.Close();
         }
     }
 }
