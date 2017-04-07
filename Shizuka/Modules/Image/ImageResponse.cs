@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using Newtonsoft.Json;
 
-namespace Shizuka.Modules
+namespace Shizuka.Modules.Image
 {
 	internal class ImageResponse
 	{
