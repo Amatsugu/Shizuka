@@ -3,24 +3,27 @@ using Shizuka.Modules.Keywords;
 using System;
 using System.Linq;
 using System.Collections.Generic;
-using Discord;
+using Discord.WebSocket;
 using System.Text;
+using System.Threading.Tasks;
+using Shizuka.Modules.Image;
+using Shizuka.Modules.Converse;
 
 namespace Shizuka
 {
     public class Server
     {
-		public event EventHandler<MessageEventArgs> messageReceived;
-		public event EventHandler<MessageEventArgs> shizukaMentioned;
+		public event Action<SocketUserMessage> MessageReceived;
+		public event Action<SocketUserMessage> ShizukaMentioned;
 
-		public ulong id { set; private get; }
+		public ulong ID { set; private get; }
 		public HashSet<Module> Modules { set; private get; }
 		private List<Keyword> _keywords;
 
 
 		public Server(ulong id)
 		{
-			this.id = id;
+			this.ID = id;
 			Modules = new HashSet<Module>();
 			_keywords = new List<Keyword>();
 			LoadModules();
@@ -29,13 +32,14 @@ namespace Shizuka
 		public void LoadModules()
 		{
 			Modules.Add(new ImageResponseModule());
+			Modules.Add(new ConversationModule());
 		}
 
 		public Server InitModules()
 		{
 			foreach (Module module in Modules)
 				module.Init(this);
-			_keywords = (from k in _keywords orderby k.priority select k).ToList();
+			_keywords = (from k in _keywords orderby k.Priority descending select k).ToList();
 			return this;
 		}
 
@@ -46,20 +50,19 @@ namespace Shizuka
 				_keywords.Add(keyword);
 		}
 
-		internal void MessageReceived(object sender, MessageEventArgs e)
+		internal Task Received(SocketUserMessage e)
 		{
-			if (e.Message.IsMentioningMe(true))
-				shizukaMentioned.Invoke(sender, e);
+			if (e.MentionedUsers.Any(x => e.Discord.CurrentUser.Id == x.Id))
+				ShizukaMentioned.Invoke(e);
 			else
 			{
-				string m = e.Message.Text;
-				if(m.Contains(' '))
-					messageReceived.Invoke(sender, e);
+				var m = e.Content;
+				if(m[0] == '!')
+					_keywords.First(x => x == m).Target?.Respond(e);
 				else
-				{
-					_keywords.First(x => x == m).target?.Respond(e.Message);
-				}
+					MessageReceived.Invoke(e);
 			}
+			return Task.CompletedTask;
 		}
 	}
 }

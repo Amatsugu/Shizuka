@@ -3,11 +3,12 @@ using System.Text;
 using System.Linq;
 using System.Collections.Generic;
 using Discord;
-using Discord.Audio;
+using Discord.Net.WebSockets;
 using Shizuka.Auth;
 using Shizuka.Modules;
 using Shizuka.Modules.Keywords;
 using System.Threading.Tasks;
+using Discord.WebSocket;
 
 namespace Shizuka
 {
@@ -15,17 +16,21 @@ namespace Shizuka
     {
 		
 
-		private static DiscordClient _client;
-		private static IAudioClient _audioClient;
+		private static DiscordSocketClient _client;
 		private static Dictionary<ulong, Server> _servers;
 
-		public static async void Init()
+		public static async Task Init()
 		{
 			_servers = new Dictionary<ulong, Server>();
-			_client = new DiscordClient();
-			await _client.Connect(Credentials.Token, TokenType.Bot);
+			_client = new DiscordSocketClient();
+			_client.Log += Log;
 			_client.MessageReceived += MessageReceived;
-			_client.SetGame("something strange");
+			await _client.LoginAsync(TokenType.Bot, Credentials.Token);
+			await _client.StartAsync();
+			_client.Ready += async ()=>
+			{
+				await _client.SetGameAsync("something strange");
+			};
 			/*_client.UsingAudio(x => x.Mode = AudioMode.Outgoing);
 			try
 			{
@@ -39,7 +44,7 @@ namespace Shizuka
 			InitModules();
 		}
 
-#region Initialization
+		#region Initialization
 
 		private static void InitModules()
 		{
@@ -51,23 +56,27 @@ namespace Shizuka
 		
 
 #region EventHandlers
-		public static void MessageReceived(object sender, MessageEventArgs e)
+		public static async Task MessageReceived(SocketMessage e)
 		{
-			if (!_servers.ContainsKey(e.Server.Id))
-				_servers.Add(e.Server.Id, new Server(e.Server.Id).InitModules());
-			if (e.User.IsBot)
+			Console.WriteLine(((e as SocketUserMessage).Author as SocketGuildUser).Guild.Name);
+			ulong serverID = ((e as SocketUserMessage).Author as SocketGuildUser).Guild.Id;
+			if (!_servers.ContainsKey(serverID))
+				_servers.Add(serverID, new Server(serverID).InitModules());
+			if (e.Author.IsBot)
 				return;
-			if (e.Message.IsAuthor)
-				return;
-			_servers[e.Server.Id].MessageReceived(sender, e);
+			await _servers[serverID].Received(e as SocketUserMessage);
 		}
 #endregion
 
-		internal static void Close()
+		internal static Task Log(LogMessage message)
 		{
-			_audioClient?.Disconnect();
-			var t = _client.Disconnect();
-			Task.WaitAll(t);
+
+			return Task.CompletedTask;
+		}
+
+		internal static async Task Close()
+		{
+			await _client.StopAsync();
 			_client.Dispose();
 		}
 	}

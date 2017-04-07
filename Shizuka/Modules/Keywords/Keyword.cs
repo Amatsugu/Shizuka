@@ -6,25 +6,25 @@ namespace Shizuka.Modules.Keywords
 {
     public struct Keyword
     {
-		public string keyword { get; private set; }
-		public Module target { get; private set; }
-		public int priority { get; private set; }
+		public string Key { get; private set; }
+		public Module Target { get; private set; }
+		public int Priority { get; private set; }
 
 		public Keyword(string keyword, Module target, int priority = 0)
 		{
-			this.keyword = keyword;
-			this.target = target;
-			this.priority = priority;
+			this.Key = keyword;
+			this.Target = target;
+			this.Priority = priority;
 		}
 
 		public static bool operator== (Keyword left, string right)
 		{
-			return (left.keyword == right);
+			return (left.Key == right);
 		}
 
 		public static bool operator ==(Keyword left, Keyword right)
 		{
-			return (left.keyword == right.keyword);
+			return (left.Key == right.Key);
 		}
 
 		public static bool operator !=(Keyword left, Keyword right)
@@ -34,7 +34,7 @@ namespace Shizuka.Modules.Keywords
 
 		public static bool operator!= (Keyword left, string right)
 		{
-			return !(left.keyword == right);
+			return !(left.Key == right);
 		}
 
 		public override bool Equals(object obj)
