@@ -3,15 +3,15 @@
   <PropertyGroup>
     <OutputType>Exe</OutputType>
     <TargetFramework>netcoreapp1.1</TargetFramework>
-    <!--PackageTargetFallback>dnxcore50</PackageTargetFallback-->
-    <!--PackageTargetFallback>portable-net45+win8</PackageTargetFallback-->
+    <PackageTargetFallback>dnxcore50</PackageTargetFallback>
+    <PackageTargetFallback>portable-net45+win8</PackageTargetFallback>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Discord.Net" Version="1.0.0-rc" />
+    <PackageReference Include="Discord.Net" Version="0.9.6" />
     <PackageReference Include="Discord.Net.Audio" Version="0.9.6" />
     <PackageReference Include="Nancy" Version="2.0.0-barneyrubble" />
-    <PackageReference Include="Newtonsoft.Json" Version="10.0.2" />
+    <PackageReference Include="Newtonsoft.Json" Version="9.0.1" />
   </ItemGroup>
 
 </Project>

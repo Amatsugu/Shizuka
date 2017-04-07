@@ -1,6 +1,4 @@
-﻿using Shizuka.Modules.Converse;
-using System;
-using System.IO;
+﻿using System;
 
 namespace Shizuka
 {
@@ -8,13 +6,9 @@ namespace Shizuka
     {
         static void Main(string[] args)
         {
-			//LSTM.Test();
-			Shizuka.Init().GetAwaiter().GetResult();
-			Console.WriteLine("Running");
+			Shizuka.Init();
 			Console.ReadLine();
-			Shizuka.Close().GetAwaiter().GetResult();
+			Shizuka.Close();
         }
-
-		
     }
 }

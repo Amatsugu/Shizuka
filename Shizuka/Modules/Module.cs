@@ -2,28 +2,26 @@
 using System.Collections.Generic;
 using System.Text;
 using Discord;
-using Discord.WebSocket;
-using System.Threading.Tasks;
 
 namespace Shizuka.Modules
 {
     public abstract class Module
     {
-		public string Name { get; protected set; }
-		public string HelpMessage { get; protected set; }
-		public int Priority { get; protected set; }
+		public string name { get; protected set; }
+		public string helpMessage { get; protected set; }
+		public int priority { get; protected set; }
 
 		public Module(string name, string helpMessage = "No help message")
 		{
-			Name = name;
-			HelpMessage = helpMessage;
-			Priority = 0;
+			this.name = name;
+			this.helpMessage = helpMessage;
+			priority = 0;
 		}
 
 		public abstract void Init(Server server);
 
-		public abstract Task Respond(SocketUserMessage message);
+		public abstract void Respond(Message message);
 
-		public virtual string GetHelpMessage(string[] args) => $"{Name}: \n\t{HelpMessage}";
+		public virtual string GetHelpMessage(string[] args) => $"{name}: \n\t{helpMessage}";
     }
 }
