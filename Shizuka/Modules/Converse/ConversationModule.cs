@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using System.IO;
 using Newtonsoft.Json;
 using System.Linq;
+using Shizuka.Models;
 
 namespace Shizuka.Modules.Converse
 {
@@ -20,6 +21,7 @@ namespace Shizuka.Modules.Converse
 		private List<SentimentResult> results;
 
 		private string session = Guid.NewGuid().ToString();
+		private string dataDir;
 
 		public ConversationModule() : base("Conversation Module", "Allows Shizuka to coverse with users using Neural Networks to interpret and respond to messages.")
 		{
@@ -29,24 +31,25 @@ namespace Shizuka.Modules.Converse
 
 		public override void Init(Server server)
 		{
+			dataDir = $"{server.DataDir}/{Name}";
+			if (!Directory.Exists(dataDir))
+				Directory.CreateDirectory(dataDir);
 			server.ShizukaMentioned += ShizukaConverse;
 			server.MessageReceived += e =>
 			{
 				Console.WriteLine($"Sentiment: {EvaluateSentiment(e.Content)} -> \"{e.Content}\"");
 			};
-			if (!Directory.Exists("Converse/"))
-				Directory.CreateDirectory("Converse/");
 
-			if (File.Exists("Converse/userAmity.json"))
-				userAmity = JsonConvert.DeserializeObject<List<AmityMap>>(File.ReadAllText("Converse/userAmity.json"));
+			if (File.Exists($"{dataDir}/userAmity.json"))
+				userAmity = JsonConvert.DeserializeObject<List<AmityMap>>(File.ReadAllText($"{dataDir}/userAmity.json"));
 			else
 			{
 				userAmity = new List<AmityMap>();
-				File.WriteAllText("Converse/userAmity.json", JsonConvert.SerializeObject(userAmity));
+				File.WriteAllText($"{dataDir}/userAmity.json", JsonConvert.SerializeObject(userAmity));
 			}
 
-			if (File.Exists("Converse/words.large.json"))
-				wordValance = JsonConvert.DeserializeObject<List<WordModel>>(File.ReadAllText("Converse/words.large.json"));
+			if (File.Exists($"{dataDir}/words.large.json"))
+				wordValance = JsonConvert.DeserializeObject<List<WordModel>>(File.ReadAllText($"{dataDir}/words.large.json"));
 			else
 				wordValance = new List<WordModel>();
 
@@ -64,20 +67,33 @@ namespace Shizuka.Modules.Converse
 			};
 		}
 
-		public static void LoadRawData(string path, string outFilename)
+		public Embed AnalyzeData(string file)
 		{
-			if (!Directory.Exists("Converse/"))
-				Directory.CreateDirectory("Converse/");
-			List<WordModel> words = new List<WordModel>();
-			string[] lines = File.ReadAllLines(path);
-			foreach (string line in lines)
+			var sr = JsonConvert.DeserializeObject<List<SentimentResult>>(File.ReadAllText(file));
+			float totalS = 0;
+			Dictionary<string, int> keywordCount = new Dictionary<string, int>();
+			foreach (SentimentResult s in sr)
 			{
-				string[] data = line.Split('\t');
-				int valence = int.Parse(data[1]);
-				words.Add(new WordModel(data[0], valence));
+				totalS += s.Sentiment;
+				foreach (string k in s.Keywords)
+				{
+					if (keywordCount.ContainsKey(k))
+						keywordCount[k] += 1;
+					else
+						keywordCount.Add(k, 1);
+				}
 			}
-			File.WriteAllText($"Converse/{outFilename}.json" ,JsonConvert.SerializeObject(words));
-
+			EmbedBuilder output = new EmbedBuilder();
+			output.AddField("The total sentiment", totalS);
+			output.AddField(f =>
+			{
+				f.Name = "Top Keywords";
+				foreach (KeyValuePair<string, int> k in (from KeyValuePair<string, int> kw in keywordCount orderby kw.Value descending select kw).Take(10))
+				{
+					f.Value += $"**{k.Key}**: {k.Value} uses \t `{wordValance.First(x=> x.Word == k.Key).Valence}`\n";
+				}
+			});
+			return output.Build();
 		}
 
 
@@ -93,23 +109,27 @@ namespace Shizuka.Modules.Converse
 			}
 			baseAmity += totalValance / words.Length;
 			results.Add(new SentimentResult(input, baseAmity, (from WordModel s in wordValance where words.Any(x => x == s.Word) select s.Word).ToArray()));
-			File.WriteAllText($"Converse/results-{session}.json", JsonConvert.SerializeObject(results));
+			File.WriteAllText($"{dataDir}/results-{session}.json", JsonConvert.SerializeObject(results));
 			return baseAmity;
 		}
 
 		private void ShizukaConverse(SocketUserMessage e)
 		{
 			Console.WriteLine($"Sentiment: {EvaluateSentiment(e.Content)} -> \"{e.Content}\"");
-
-			string message = e.Content;
+			string message = e.TextWithoutMention();
 			SocketUser user = e.Author;
 			SocketGuildChannel channel = e.Channel as SocketGuildChannel;
 		}
 
 		public override Task Respond(SocketUserMessage message)
 		{
-
+			
 			return Task.CompletedTask;
+		}
+
+		public override ModuleModel GetModel()
+		{
+			throw new NotImplementedException();
 		}
 	}
 }

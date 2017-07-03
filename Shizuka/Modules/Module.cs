@@ -4,6 +4,7 @@ using System.Text;
 using Discord;
 using Discord.WebSocket;
 using System.Threading.Tasks;
+using Shizuka.Models;
 
 namespace Shizuka.Modules
 {
@@ -21,6 +22,8 @@ namespace Shizuka.Modules
 		}
 
 		public abstract void Init(Server server);
+
+		public abstract ModuleModel GetModel();
 
 		public abstract Task Respond(SocketUserMessage message);
 

@@ -8,6 +8,7 @@ using Newtonsoft.Json;
 using Shizuka.Modules.Keywords;
 using Discord.WebSocket;
 using System.Threading.Tasks;
+using Shizuka.Models;
 
 namespace Shizuka.Modules.Image
 {
@@ -29,13 +30,18 @@ namespace Shizuka.Modules.Image
 
 		public override async Task Respond(SocketUserMessage m)
 		{
-			if(_images.Any(x => x.name == m.Content))
-				await m.Channel.SendMessageAsync(_images.First(x => x.name == m.Content).GetImage());
+			if(_images.Any(x => x.name == m.Content.Remove(0,1)))
+				await m.Channel.SendMessageAsync(_images.First(x => x.name == m.Content.Remove(0,1)).GetImage());
 		}
 
 		public override string GetHelpMessage(string[] args)
 		{
 			return base.GetHelpMessage(args);
+		}
+
+		public override ModuleModel GetModel()
+		{
+			throw new NotImplementedException();
 		}
 	}
 }

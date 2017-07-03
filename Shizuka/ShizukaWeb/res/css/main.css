@@ -1,0 +1,19 @@
+@import url("colors.css");
+
+#wrapper
+{
+	padding: 0;
+	margin: 0;
+	width: 100%;
+	background-color: var(--color2);
+}
+
+#wrapper #header
+{
+	
+}
+
+#wrapper #header #logo #icon
+{
+	background-image: url(/res/img/Shizuka.ico);
+}

@@ -1,17 +1,44 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
-  <PropertyGroup>
-    <OutputType>Exe</OutputType>
-    <TargetFramework>netcoreapp1.1</TargetFramework>
-    <!--PackageTargetFallback>dnxcore50</PackageTargetFallback-->
-    <!--PackageTargetFallback>portable-net45+win8</PackageTargetFallback-->
-  </PropertyGroup>
+	<PropertyGroup>
+		<OutputType>Exe</OutputType>
+		<TargetFramework>netcoreapp1.1</TargetFramework>
+		<!--PackageTargetFallback>dnxcore50</PackageTargetFallback-->
+		<!--PackageTargetFallback>portable-net45+win8</PackageTargetFallback-->
+	</PropertyGroup>
 
-  <ItemGroup>
-    <PackageReference Include="Discord.Net" Version="1.0.0-rc" />
-    <PackageReference Include="Discord.Net.Audio" Version="0.9.6" />
-    <PackageReference Include="Nancy" Version="2.0.0-barneyrubble" />
-    <PackageReference Include="Newtonsoft.Json" Version="10.0.2" />
-  </ItemGroup>
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" />
 
+	<ItemGroup>
+		<Compile Remove="237371941961465856\**" />
+		<EmbeddedResource Remove="237371941961465856\**" />
+		<None Remove="237371941961465856\**" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<None Remove="Bootstrap\appsettings.json" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<EmbeddedResource Include="Bootstrap\appsettings.json">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</EmbeddedResource>
+	</ItemGroup>
+
+	<ItemGroup>
+		<PackageReference Include="Discord.Net" Version="1.0.0-rc2" />
+		<PackageReference Include="Microsoft.AspNetCore.Owin" Version="1.1.2" />
+		<PackageReference Include="Microsoft.AspNetCore.Server.Kestrel" Version="1.1.2" />
+		<PackageReference Include="Nancy" Version="2.0.0-Pre1868" />
+		<PackageReference Include="Newtonsoft.Json" Version="10.0.3" />
+	</ItemGroup>
+	<ItemGroup>
+		<ShizukaWeb Include="$(ProjectDir)ShizukaWeb\**\*.*" />
+	</ItemGroup>
+	<Target Name="AfterBuild">
+		<Copy SourceFiles="@(ShizukaWeb)" DestinationFiles="@(ShizukaWeb->'$(TargetDir)ShizukaWeb\%(RecursiveDir)%(Filename)%(Extension)')" />
+	</Target>
+	<Target Name="AfterClean">
+		<RemoveDir Directories="$(OutDir)\ShizukaWeb" />
+	</Target>
 </Project>

@@ -16,14 +16,18 @@ namespace Shizuka
 		public event Action<SocketUserMessage> MessageReceived;
 		public event Action<SocketUserMessage> ShizukaMentioned;
 
-		public ulong ID { set; private get; }
-		public HashSet<Module> Modules { set; private get; }
+		public ulong ID { get; private set; }
+		public SocketTextChannel DefaultChannel { get; private set; }
+		public HashSet<Module> Modules { get; private set; }
+		public string DataDir { get; private set; }
 		private List<Keyword> _keywords;
 
 
-		public Server(ulong id)
+		public Server(SocketGuild server)
 		{
-			this.ID = id;
+			this.ID = server.Id;
+			DataDir = $"{Shizuka.DataDir}/{server.Id}/ServerData";
+			DefaultChannel = server.DefaultChannel;
 			Modules = new HashSet<Module>();
 			_keywords = new List<Keyword>();
 			LoadModules();
@@ -52,13 +56,13 @@ namespace Shizuka
 
 		internal Task Received(SocketUserMessage e)
 		{
-			if (e.MentionedUsers.Any(x => e.Discord.CurrentUser.Id == x.Id))
+			if (e.MentionedUsers.Any(x => Shizuka.ID == x.Id))
 				ShizukaMentioned.Invoke(e);
 			else
 			{
 				var m = e.Content;
 				if(m[0] == '!')
-					_keywords.First(x => x == m).Target?.Respond(e);
+					_keywords.First(x => x == m.Remove(0,1)).Target?.Respond(e);
 				else
 					MessageReceived.Invoke(e);
 			}
