@@ -11,7 +11,13 @@ namespace Shizuka
 		{
 			Get("/{server}", args =>
 			{
-				return View["server"];
+				try
+				{
+					return View["server", Shizuka.GetServerData((ulong)args.server)];
+				}catch
+				{
+					return new Response { StatusCode = HttpStatusCode.NotFound };
+				}
 			});
 		}
     }

@@ -1,16 +1,20 @@
 <html>
 	<head>
 		<link href="/res/css/main.css" rel="stylesheet">
-		<title>Shizuka | @Model.Server.Name</title>
+		<title>Shizuka | @Model.Name</title>
 	</head>
 	<body>
-		<div id="pageWrapper">
-			<div id="header">
-				<div id="logo">
-					<div id="icon"></div>
-					<div id="name">Shizuka</div>
-				</div>				
-				<div id="subtitle">@Model.Server.Name</div>
+		<div id="wrapper">
+			<div id="header" class="panel">
+				<div id="logo"></div>
+				<div id="title">Shizuka</div>
+				<div id="subtitle">@Model.Name</div>
+			</div>
+			<div id="body">
+				<div id="sidePanel" class="panel">
+					<div class="moduleListing panel">Image Module</div>
+				</div>
+				<div id="managePanel"></div>
 			</div>
 		</div>
 	</body>

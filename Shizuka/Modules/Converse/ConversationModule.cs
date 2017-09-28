@@ -48,8 +48,8 @@ namespace Shizuka.Modules.Converse
 				File.WriteAllText($"{dataDir}/userAmity.json", JsonConvert.SerializeObject(userAmity));
 			}
 
-			if (File.Exists($"{dataDir}/words.large.json"))
-				wordValance = JsonConvert.DeserializeObject<List<WordModel>>(File.ReadAllText($"{dataDir}/words.large.json"));
+			if (File.Exists($"{Shizuka.DataDir}/Modules/{Name}/words.large.json"))
+				wordValance = JsonConvert.DeserializeObject<List<WordModel>>(File.ReadAllText($"{Shizuka.DataDir}/Modules/{Name}/words.large.json"));
 			else
 				wordValance = new List<WordModel>();
 

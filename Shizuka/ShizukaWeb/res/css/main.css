@@ -1,19 +1,105 @@
-@import url("colors.css");
+@import url('https://fonts.googleapis.com/css?family=Open+Sans:300,300i,400');
+
+:root
+{
+	--color1:#1dc4d8;
+	--color2:#117480;
+	--color3:#fff;
+	--color4:#aaa;
+}
+
+body
+{
+	margin: 0;
+	font-family: 'Open Sans', sans-serif;
+}
 
 #wrapper
 {
-	padding: 0;
-	margin: 0;
 	width: 100%;
-	background-color: var(--color2);
+	height: 100%;
+	display: grid;
+	grid-template-rows:100px 1fr;
 }
 
+/*header*/
 #wrapper #header
 {
-	
+	display: grid;
+	grid-template-columns:100px 1fr;
+	grid-template-rows:1fr 1fr;
+	background-color: var(--color2);
+	color: var(--color3);
+	font-weight: 300;
 }
 
-#wrapper #header #logo #icon
+#header #logo
 {
 	background-image: url(/res/img/Shizuka.ico);
+	background-size: contain;
+	background-position: center;
+	background-repeat: no-repeat;
+	grid-column: 1 / 1;
+	grid-row: 1 / span 2;
+}
+
+#header #Title
+{
+	grid-column: 2/2;
+	grid-row:1/1;
+	font-size: 40px;
+}
+
+#header #subtitle
+{
+	grid-column: 2/2;
+	grid-row:2/2;
+	vertical-align:text-top;
+	font-size: 20px;
+	font-style: italic;
+}
+
+/*body*/
+#wrapper #body
+{
+	display: grid;
+	grid-template-columns: 300px 1fr;
+	border-top:solid var(--color1) 2px;
+}
+
+.panel
+{
+	box-shadow: 0px 0px 10px rgba(0,0,0,0.2);
+}
+
+#body #sidePanel
+{
+	background-color: var(--color2);
+	overflow: hidden;
+}
+
+
+#sidePanel .moduleListing
+{
+	background-color: var(--color2);
+	border-left: 2px solid var(--color1);
+	color: var(--color3);
+	font-size: 20px;
+	height: 40px;
+	line-height: 40px;
+	width: 263px;
+	margin-left: 25px;
+	margin-top: 25px;
+	padding-left: 10px;
+	transition: background-color .5s;
+}
+
+#sidePanel .moduleListing:hover
+{
+	background-color: var(--color1);
+}
+
+#body #managePanel
+{
+	background-color: var(--color4);
 }

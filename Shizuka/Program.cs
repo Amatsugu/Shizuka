@@ -33,7 +33,7 @@ namespace Shizuka
 				}else
 				Shizuka.SendMessage(channel, line).GetAwaiter().GetResult();
 			}
-			Shizuka.Close().GetAwaiter().GetResult();
+			Shizuka.Close();
         }
 
 		

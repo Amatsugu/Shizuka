@@ -16,18 +16,19 @@ namespace Shizuka
 		public event Action<SocketUserMessage> MessageReceived;
 		public event Action<SocketUserMessage> ShizukaMentioned;
 
-		public ulong ID { get; private set; }
-		public SocketTextChannel DefaultChannel { get; private set; }
+		public ulong ID { get { return _serverSocket.Id; } }
+		public string Name { get { return _serverSocket.Name; } }
+		public SocketTextChannel DefaultChannel { get { return _serverSocket.DefaultChannel; } }
 		public HashSet<Module> Modules { get; private set; }
 		public string DataDir { get; private set; }
 		private List<Keyword> _keywords;
+		private SocketGuild _serverSocket;
 
 
 		public Server(SocketGuild server)
 		{
-			this.ID = server.Id;
-			DataDir = $"{Shizuka.DataDir}/{server.Id}/ServerData";
-			DefaultChannel = server.DefaultChannel;
+			_serverSocket = server;
+			DataDir = $"{Shizuka.DataDir}/Servers/{server.Id}";
 			Modules = new HashSet<Module>();
 			_keywords = new List<Keyword>();
 			LoadModules();

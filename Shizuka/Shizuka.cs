@@ -26,7 +26,7 @@ namespace Shizuka
 
 		public static async Task Init()
 		{
-			DataDir = Directory.GetCurrentDirectory();
+			DataDir = $"{Directory.GetCurrentDirectory()}/Data";
 			Console.WriteLine(DataDir);
 			_servers = new Dictionary<ulong, Server>();
 			_client = new DiscordSocketClient();
@@ -81,15 +81,27 @@ namespace Shizuka
 		}
 #endregion
 
+		public static ServerData GetServerData(ulong id)
+		{
+			try
+			{
+				ServerData data = new ServerData(id, _servers[id].Name);
+				return data;
+			}catch
+			{
+				throw new Exception("No Such Server");
+			}
+		}
+
 		internal static Task Log(LogMessage message)
 		{
-
+			Console.WriteLine(message.Message);
 			return Task.CompletedTask;
 		}
 
-		internal static async Task Close()
+		internal static void Close()
 		{
-			await _client.StopAsync();
+			_client.StopAsync().GetAwaiter().GetResult();
 		}
 	}
 }
